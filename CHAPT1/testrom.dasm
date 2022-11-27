@@ -1,0 +1,56 @@
+    processor 6502
+    include "vcs.h"
+    include "macro.h"
+
+    org $f000 
+
+START:
+    sei 
+    cld 
+    ldx #$ff 
+    txs 
+    lda #$00
+CLEAR:
+    sta 0,x 
+    dex
+    bne CLEAR
+SHOW_FRAME:
+    lda #$88
+    sta COLUBK
+
+    sta WSYNC
+    lda #2
+    sta VSYNC
+    sta WSYNC 
+    sta WSYNC
+    sta WSYNC
+    lda #0
+    sta VSYNC
+
+    lda #36
+TOP:
+    sta WSYNC
+    dex 
+    bne TOP
+
+    lda #0
+    sta VBLANK 
+    ldx #192
+VISIBLE:
+    sta WSYNC
+    dex 
+    bne VISIBLE
+
+    lda #2
+    sta VBLANK
+    ldx #30
+BOTTOM:
+    sta WSYNC
+    dex 
+    bne BOTTOM
+
+    jmp SHOW_FRAME
+
+    ORG $fffc 
+    .word START
+    .word START
