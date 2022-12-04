@@ -1,0 +1,105 @@
+;  A simple Ball Demo
+
+    Processor 6502
+    include "vcs.h"
+;    include "macro.h"
+
+    org $f000
+
+START:
+    sei         ; Disable the interupts
+    cld         ; Clear Decimal Mode
+    ldx #$ff        ; Letting X = #$ff(255)
+    txs             ; S = #$ff
+    lda #$00        ; A = $00
+
+CLEAR:
+    sta 0,x 
+    dex 
+    bne CLEAR
+
+SHOW_FRAME:
+    lda #$34        ; Blue - see Atari NTSC colours
+    sta COLUBK      ; Background colour
+    lda #$0f        ; = White 0f (15)
+    sta COLUPF      ; Playfield Colour
+
+    sta WSYNC
+    lda #2          ; Start of the vertical retrace
+    sta VSYNC
+    sta WSYNC
+    sta WSYNC
+    sta WSYNC
+    lda #0          ; End of the Vertical retrace
+    sta VSYNC
+
+    ; Ball Horizontal position (23 Nops for center)
+    sta WSYNC   ; cycle 3 - it will then increase by 2 for every Nop
+    nop         ; 5
+    nop         ; 7
+    nop         ; 9
+    nop         
+    nop          
+    nop         ; 15
+    nop         ; 17
+    nop          
+    nop          
+    nop          
+    nop         ; 25
+    nop          
+    nop          
+    nop          
+    nop          
+    nop         ; 35
+    nop          
+    nop          
+    nop          
+    nop         ; 45
+    nop         ; 47
+    nop         ; 49
+    sta RESBL   ; 52
+  
+    ldx #35         ; Remaining 35 scanlines of Top Border
+TOP:
+    sta WSYNC
+    dex
+    bne TOP 
+    lda #0          ; Disable Blanking
+    sta VBLANK
+
+    ldx #95         ; 95 Scanlines in Blue
+
+VISIBLE:
+    sta WSYNC
+    dex 
+    BNE VISIBLE
+    sta WSYNC
+    lda #$02        ; One Scan line
+    sta ENABL
+
+    sta WSYNC       ; One Scan Line
+    lda #$00
+    sta ENABL
+
+    lda #$4a        ; Sand Colour
+    sta COLUBK
+
+    ldx #95         ; 95 scanlines
+VISIBLE2:
+    sta WSYNC
+    dex 
+    bne VISIBLE2
+
+    lda #2          ; Enable Blanking
+    sta VBLANK
+    ldx #30         ; 30 Scanlines
+
+BOTTOM:
+    sta WSYNC
+    dex 
+    bne BOTTOM
+
+    jmp SHOW_FRAME
+    org $fffc 
+    .word START
+    .word START
