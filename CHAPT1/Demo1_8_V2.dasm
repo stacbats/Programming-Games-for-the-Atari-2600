@@ -36,15 +36,34 @@ TOP:
 
     lda #0
     sta VBLANK 
-    ldx #192
+
+;   *****  NEW CODE HERE  *****
+    ldx #64
 VISIBLE:
     sta WSYNC
     dex 
     bne VISIBLE
 
-    lda #2
-    sta VBLANK
+    lda #$f8
+    sta COLUBK
+
+    ldx #64
+VISIBLE2:
+    sta WSYNC
+    dex 
+    bne VISIBLE2
+    
+   lda #$5a
+    sta COLUBK
+
+    ldx #64
+VISIBLE3:
+    sta WSYNC
+    dex 
+    bne VISIBLE3
+    
     ldx #30
+    
 BOTTOM:
     sta WSYNC
     dex 
