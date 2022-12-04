@@ -1,0 +1,112 @@
+    processor 6502                  ;   Tells us the processor
+    include "vcs.h"                 ;   include file vcs.h - contains an assortment of labels
+    include "macro.h"
+
+    org $f000                       ;   Our starting address
+
+START:
+    sei                             ;   This sets the processors Interupt flag (Atari 2600 doesnt have an INT, so no need to include it. (But good practice)
+    cld                             ;   Clear the decimal flag
+    ldx #$ff                        ;   Load A with Value
+    txs                             ;   Transfer the value into S register (the stack)
+    lda #$00        
+CLEAR:
+    sta 0,x 
+    dex
+    bne CLEAR
+SHOW_FRAME:
+    lda #$9a                        ;   (88)This is for the colour of the screen, see the link below
+    sta COLUBK  
+    ; https://www.randomterrain.com/atari-2600-memories-tutorial-andrew-davie-11.html#:~:text=Colors%20are%20represented%20on%20the%20%272600%20by%20numbers.,gray%2C%20and%20on%20SECAM%20it%20is%20aqua%20%28%21%29.
+
+    sta WSYNC                       ;   Now we start to fill the screen
+    lda #2
+    sta VSYNC
+    sta WSYNC 
+    sta WSYNC
+    sta WSYNC
+    lda #0
+    sta VSYNC
+
+    ldX #36
+TOP:
+    sta WSYNC
+    dex 
+    bne TOP
+
+    lda #0
+    sta VBLANK 
+
+;   *****  NEW CODE HERE  *****  top part has 4 layers - 64/4 = 12
+
+    ldx #26
+VISIBLE_sky:
+    sta WSYNC
+    dex 
+    bne VISIBLE_sky
+
+    lda #$88
+    sta COLUBK
+
+    ldx #18
+VISIBLE_sky2:
+    sta WSYNC
+    dex 
+    bne VISIBLE_sky2
+    
+    lda #$86
+    sta COLUBK
+
+    ldx #12
+VISIBLE_sky3:
+    sta WSYNC
+    dex 
+    bne VISIBLE_sky3
+    
+    lda #$74
+    sta COLUBK
+
+    ldx #8
+VISIBLE_sky4:
+    sta WSYNC
+    dex 
+    bne VISIBLE_sky4
+    
+    lda #$2c
+    sta COLUBK
+
+    ldx #22
+VISIBLE5_mid:
+    sta WSYNC
+    dex 
+    bne VISIBLE5_mid
+    
+    lda #$2a
+    sta COLUBK
+
+    ldx #42
+VISIBLE_mid1:
+    sta WSYNC
+    dex 
+    bne VISIBLE_mid1
+    
+    lda #$c8
+    sta COLUBK
+
+    ldx #64
+VISIBLE_ground:
+    sta WSYNC
+    dex 
+    bne VISIBLE_ground
+    
+    ldx #30
+BOTTOM:
+    sta WSYNC
+    dex 
+    bne BOTTOM
+
+    jmp SHOW_FRAME
+
+    ORG $fffc 
+    .word START
+    .word START
