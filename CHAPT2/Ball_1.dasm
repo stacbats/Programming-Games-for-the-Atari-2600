@@ -1,4 +1,4 @@
-;  A simple Ball Demo
+;  A simple Ball Demo 2.1 The Ball
 
     Processor 6502
     include "vcs.h"
